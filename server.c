@@ -39,23 +39,23 @@ int main(int argc, char **argv)
     usage(argc, argv);
 
   // create socket
-  int s = socket(AF_INET6, SOCK_STREAM, 0);
+  int sock = socket(storage.ss_family, SOCK_STREAM, 0);
 
-  if (s == -1)
+  if (sock == -1)
     log_error("on socket creation");
 
   // enable re-binding to port immediately after last instance was shut down
   int enable = 1;
-  if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0)
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0)
     log_error("on reusage of address port");
 
   // bind to port and start listening
   struct sockaddr *addr = (struct sockaddr *)(&storage);
 
-  if (bind(s, addr, sizeof(storage)) != 0)
+  if (bind(sock, addr, sizeof(storage)) != 0)
     log_error("on bind");
 
-  if (listen(s, 10) != 0)
+  if (listen(sock, 10) != 0)
     log_error("on listen");
 
   char addrstr[BUF_SZ];
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     struct sockaddr *caddr = (struct sockaddr *)(&storage);
     socklen_t caddrlen = sizeof(cstorage);
 
-    int csock = accept(s, caddr, &caddrlen);
+    int csock = accept(sock, caddr, &caddrlen);
 
     if (csock == -1)
       log_error("on accept");
@@ -98,6 +98,10 @@ int main(int argc, char **argv)
         close(csock);
         exit(EXIT_SUCCESS);
       }
+
+      // Socket closed by client, proceed to the next client
+      if(strlen(msg) == 0)
+        break;
 
       // parse header
       int filename_sz = 0;

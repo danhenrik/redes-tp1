@@ -36,7 +36,7 @@ int addrparse(const char *addrstr, const char *portstr, struct sockaddr_storage 
     return 0;
   }
 
-  struct in_addr inaddr6;
+  struct in6_addr inaddr6;
   if (inet_pton(AF_INET6, addrstr, &inaddr6)) // 128 bit ipv6 addr
   {
     struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)storage;

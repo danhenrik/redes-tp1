@@ -54,13 +54,8 @@ int main(int argc, char **argv)
 
   struct sockaddr *addr = (struct sockaddr *)(&storage);
 
-  int connected = connect(sock, addr, sizeof(storage));
-
-  if (connected != 0)
-  {
+  if (connect(sock, addr, sizeof(storage)) != 0)
     log_error("on connect");
-    exit(EXIT_FAILURE);
-  }
 
   char addrstr[BUF_SZ];
   addrtostr(addr, addrstr, BUF_SZ);
